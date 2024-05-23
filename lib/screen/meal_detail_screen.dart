@@ -20,17 +20,33 @@ class MealDetailScreen extends StatelessWidget {
                   Provider.of<FavouriteViewModel>(context, listen: false)
                       .addToggleFavourite(meal, context);
                 },
-                icon:  Icon(data.favourite.contains(meal)? Icons.star:Icons.star_border));
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (child, animation) => RotationTransition(
+                    turns:
+                        Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+                    child: child,
+                  ),
+                  child: Icon(
+                    data.favourite.contains(meal)
+                        ? Icons.star
+                        : Icons.star_border,
+                    key: ValueKey(data.favourite.contains(meal)),
+                  ),
+                ));
           })
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(
-              meal.imageUrl,
-              height: 300,
-              width: double.infinity,
+            Hero(
+              tag: meal.id,
+              child: Image.network(
+                meal.imageUrl,
+                height: 300,
+                width: double.infinity,
+              ),
             ),
             const SizedBox(
               height: 14,

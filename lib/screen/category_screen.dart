@@ -10,13 +10,17 @@ class CategoryScreen extends StatefulWidget {
   State<CategoryScreen> createState() => _CategoryScreenState();
 }
 
-class _CategoryScreenState extends State<CategoryScreen> {
+class _CategoryScreenState extends State<CategoryScreen>
+    with SingleTickerProviderStateMixin {
   late CategoryViewModel categoryViewModel;
-
+  late AnimationController _animationController;
   @override
   void initState() {
     super.initState();
     categoryViewModel = CategoryViewModel();
+    _animationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    _animationController.forward();
   }
 
   @override
@@ -34,9 +38,21 @@ class _CategoryScreenState extends State<CategoryScreen> {
               mainAxisSpacing: 20,
             ),
             itemBuilder: (context, index) {
-              return CategoryWidget(
-                category: value.category[index],
-              );
+              return AnimatedBuilder(
+                  animation: _animationController,
+                  child: CategoryWidget(
+                    category: value.category[index],
+                  ),
+                  builder: (context, child) {
+                    return SlideTransition(
+                      position:
+                          Tween(begin: const Offset(0, 0.5), end: Offset.zero)
+                              .animate(CurvedAnimation(
+                                  parent: _animationController,
+                                  curve: Curves.decelerate)),
+                      child: child,
+                    );
+                  });
             },
             itemCount: value.category.length,
           );
